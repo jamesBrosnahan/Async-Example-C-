@@ -9,9 +9,11 @@
 std::vector<int> random_vector(int size){
   std::vector<int> v(size);
   std::generate(v.begin(), v.end(), std::rand);
+  return v;
 }
 
 int main(){
+  std::srand(std::time(nullptr));
   std::vector<std::future<std::vector<int>>> r;
   r.push_back(std::async(random_vector, 10));
   r.push_back(std::async(random_vector, 200));
@@ -19,19 +21,21 @@ int main(){
   
   std::vector<int> current;
   
-  for(auto &rn :  r){
+  std::for_each(r.begin(), r.end(), [&current](std::future<std::vector<int>> &rn){
     for(int i = 0; i < 10; i++){
       std::cout << "_";
     }
     std::cout << std::endl;
     current = rn.get();
     std::cout << "Random vector of integers of length: " << current.size() << std::endl;
-    for(auto &i : current){
+    
+    std::for_each(current.begin(), current.end(), [](int &i){
       std::cout << "Element value: " << i << ". " << std::endl;
-    }
+    });
+    
     for(int i = 0; i < 10; i++){
       std::cout << "_";
     }
     std::cout << std::endl;
-  }
+  });
 }
